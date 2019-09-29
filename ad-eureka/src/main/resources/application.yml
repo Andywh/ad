@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: ad-eureka
+
+server:
+  port: 8000
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    fetch-registry: true # 这个参数表示是否从 eureka 节点同步信息
+    register-with-eureka: false # 是否将自己注册到 eureka
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+
+#---
+#spring:
+#  application:
+#    name: ad-eureka
+#  profiles: server1
+#server:
+#  port: 18001
+#eureka:
+#  instance:
+#    hostname: server1
+#    prefer-ip-address: false # 单节点用 ip 注册会失败
+#  client:
+#    service-url:
+#      defaultZone: http://server2:18002/eureka/,http://server3:18003/eureka/
+#
+#---
+#spring:
+#  application:
+#    name: ad-eureka
+#  profiles: server2
+#server:
+#  port: 18002
+#eureka:
+#  instance:
+#    hostname: server2
+#    prefer-ip-address: false # 单节点用 ip 注册会失败
+#  client:
+#    service-url:
+#      defaultZone: http://server1:18001/eureka/,http://server3:18003/eureka/
+#
+#---
+#spring:
+#  application:
+#    name: ad-eureka
+#  profiles: server3
+#server:
+#  port: 18003
+#eureka:
+#  instance:
+#    hostname: server3
+#    prefer-ip-address: false # 单节点用 ip 注册会失败
+#  client:
+#    service-url:
+#      defaultZone: http://server1:18001/eureka/,http://server2:18002/eureka/
