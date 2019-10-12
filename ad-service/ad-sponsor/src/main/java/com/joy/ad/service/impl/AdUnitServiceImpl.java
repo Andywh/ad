@@ -3,14 +3,17 @@ package com.joy.ad.service.impl;
 import com.joy.ad.constant.Constants;
 import com.joy.ad.dao.AdPlanRepository;
 import com.joy.ad.dao.AdUnitRepository;
+import com.joy.ad.dao.CreativeRepository;
 import com.joy.ad.dao.unit_condition.AdUnitDistrictRepository;
 import com.joy.ad.dao.unit_condition.AdUnitItRepository;
 import com.joy.ad.dao.unit_condition.AdUnitKeywordRepository;
+import com.joy.ad.dao.unit_condition.CreativeUnitRepository;
 import com.joy.ad.entity.AdPlan;
 import com.joy.ad.entity.AdUnit;
 import com.joy.ad.entity.unit_condition.AdUnitDistrict;
 import com.joy.ad.entity.unit_condition.AdUnitIt;
 import com.joy.ad.entity.unit_condition.AdUnitKeyword;
+import com.joy.ad.entity.unit_condition.CreativeUnit;
 import com.joy.ad.exception.AdException;
 import com.joy.ad.service.IAdUnitService;
 import com.joy.ad.vo.*;
@@ -38,13 +41,19 @@ public class AdUnitServiceImpl implements IAdUnitService {
 
     private final AdUnitDistrictRepository unitDistrictRepository;
 
+    private final CreativeRepository creativeRepository;
+
+    private final CreativeUnitRepository creativeUnitRepository;
+
     @Autowired
-    public AdUnitServiceImpl(AdPlanRepository planRepository, AdUnitRepository unitRepository, AdUnitKeywordRepository unitKeywordRepository, AdUnitItRepository unitItRepository, AdUnitDistrictRepository unitDistrictRepository) {
+    public AdUnitServiceImpl(AdPlanRepository planRepository, AdUnitRepository unitRepository, AdUnitKeywordRepository unitKeywordRepository, AdUnitItRepository unitItRepository, AdUnitDistrictRepository unitDistrictRepository, CreativeRepository creativeRepository, CreativeUnitRepository creativeUnitRepository) {
         this.planRepository = planRepository;
         this.unitRepository = unitRepository;
         this.unitKeywordRepository = unitKeywordRepository;
         this.unitItRepository = unitItRepository;
         this.unitDistrictRepository = unitDistrictRepository;
+        this.creativeRepository = creativeRepository;
+        this.creativeUnitRepository = creativeUnitRepository;
     }
 
     @Override
@@ -127,8 +136,8 @@ public class AdUnitServiceImpl implements IAdUnitService {
 
         List<AdUnitDistrict> unitDistricts = new ArrayList<>();
         if (!CollectionUtils.isEmpty(request.getUnitDistrictList())) {
-            request.getUnitDistrictList().forEach(i -> unitDistricts.add(
-                    new AdUnitDistrict(i.getUnitId(), i.getProvince(), i.getCity())
+            request.getUnitDistrictList().forEach(d -> unitDistricts.add(
+                    new AdUnitDistrict(d.getUnitId(), d.getProvince(), d.getCity())
             ));
             ids = unitDistrictRepository.saveAll(unitDistricts).stream()
                     .map(AdUnitDistrict::getId)
@@ -137,11 +146,42 @@ public class AdUnitServiceImpl implements IAdUnitService {
         return new AdUnitDistrictResponse(ids);
     }
 
+    @Override
+    public CreativeUnitResponse createCreativeUnit(CreativeUnitRequest request) throws AdException {
+
+        List<Long> unitIds = request.getUnitItems().stream()
+                .map(CreativeUnitRequest.CreativeUnitItem::getUnitId)
+                .collect(Collectors.toList());
+        List<Long> creativeIds = request.getUnitItems().stream()
+                .map(CreativeUnitRequest.CreativeUnitItem::getUnitId)
+                .collect(Collectors.toList());
+        if (!(isRelatedUnitExist(unitIds) && isRelatedCreativeExist(creativeIds))) {
+            throw new AdException(Constants.ErrorMsg.REQUEST_PARAM_ERROR);
+        }
+        List<CreativeUnit> creativeUnits = new ArrayList<>();
+        request.getUnitItems().forEach(i -> creativeUnits.add(
+                new CreativeUnit(i.getCreativeId(), i.getUnitId())
+        ));
+        List<Long> ids = creativeUnitRepository.saveAll(creativeUnits)
+                .stream()
+                .map(CreativeUnit::getId)
+                .collect(Collectors.toList());
+        return new CreativeUnitResponse(ids);
+    }
+
     private boolean isRelatedUnitExist(List<Long> unitIds) {
         if (CollectionUtils.isEmpty(unitIds)) {
             return false;
         }
         return unitRepository.findAllById(unitIds).size() == new HashSet<>(unitIds).size();
+    }
+
+    private boolean isRelatedCreativeExist(List<Long> creativeIds) {
+        if (CollectionUtils.isEmpty(creativeIds)) {
+            return false;
+        }
+        return creativeRepository.findAllById(creativeIds).size() ==
+                new HashSet<>(creativeIds).size();
     }
 
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8001
+  port: 8000
 spring:
   application:
     name: ad-gateway
@@ -7,3 +7,11 @@ eureka:
   client:
     service-url:
       defaultZone: http://server1:8000/eureka/
+
+zuul:
+  prefix: /joy
+  routes:
+    sponsor:
+      path: /ad-sponsor/**
+      serviceId: eureka-client-ad-sponsor
+      strip-prefix: false # 如果设置为 true, 会去掉 /ad-sponsor 这个前缀

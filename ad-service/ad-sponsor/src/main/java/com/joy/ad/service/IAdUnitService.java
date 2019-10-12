@@ -1,6 +1,7 @@
 package com.joy.ad.service;
 
 import com.joy.ad.entity.AdUnit;
+import com.joy.ad.entity.unit_condition.CreativeUnit;
 import com.joy.ad.exception.AdException;
 import com.joy.ad.vo.*;
 
@@ -16,5 +17,7 @@ public interface IAdUnitService {
     AdUnitItResponse createUnitIt(AdUnitItRequest request) throws AdException;
 
     AdUnitDistrictResponse createUnitDistrict(AdUnitDistrictRequest request) throws AdException;
+
+    CreativeUnitResponse createCreativeUnit(CreativeUnitRequest request) throws AdException;
 
 }
