@@ -27,7 +27,7 @@
         <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
         <fastjson.version>1.2.59</fastjson.version>
         <commons-codec.version>1.9</commons-codec.version>
-        <mysql.version>8.0.16</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <commons-collections4.version>4.0</commons-collections4.version>
         <binlog.version>0.13.0</binlog.version>
     </properties>
